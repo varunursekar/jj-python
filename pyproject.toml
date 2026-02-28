@@ -1,0 +1,14 @@
+[project]
+name = "jj"
+version = "0.1.0"
+description = "Pythonic wrapper over the jj CLI for scripting and automation"
+readme = "README.md"
+authors = [
+    { name = "Varun Ursekar", email = "varun.ursekar@scale.com" }
+]
+requires-python = ">=3.11"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
