@@ -1,10 +1,14 @@
 # jj — Python API for Jujutsu
 
+> **Experimental** — This library is under active development. APIs may change without notice.
+
 A Pythonic async wrapper over the [jj](https://github.com/jj-vcs/jj) CLI for scripting and automation, similar to how GitPython wraps git.
 
 ## Install
 
 ```bash
+uv add jj --path .
+# or
 pip install .
 ```
 
@@ -136,3 +140,12 @@ Run any jj command directly:
 result = await repo.run(["version"])
 print(result.stdout)
 ```
+
+## Development
+
+```bash
+uv sync          # install deps + dev deps
+uv run pytest -v # run all tests
+```
+
+The test suite includes both **unit tests** (using a mock executor, no jj required) and **integration tests** (running real jj commands against temp repos). Integration tests are automatically skipped if `jj` is not installed.

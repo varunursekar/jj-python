@@ -28,36 +28,57 @@ class OperationManager:
 
     @staticmethod
     def _parse_op_log(output: str) -> list[Operation]:
-        """Parse operation log text output into Operation objects."""
-        operations: list[Operation] = []
-        current: dict[str, str] = {}
+        """Parse ``jj operation log --no-graph`` output.
 
+        Real format (each entry separated by blank lines)::
+
+            <id> <user> <time-description>
+            <description>
+            args: <command args>          ← optional, absent for root op
+
+        The root operation looks like::
+
+            000000000000 root()
+        """
+        operations: list[Operation] = []
+        # Split into blocks separated by blank lines
+        blocks: list[list[str]] = []
+        current_block: list[str] = []
         for line in output.splitlines():
             if not line.strip():
-                if current:
-                    operations.append(Operation(
-                        id=current.get("id", ""),
-                        description=current.get("description", ""),
-                        time=current.get("time", ""),
-                        user=current.get("user", ""),
-                        tags=current.get("tags", ""),
-                    ))
-                    current = {}
+                if current_block:
+                    blocks.append(current_block)
+                    current_block = []
+            else:
+                current_block.append(line)
+        if current_block:
+            blocks.append(current_block)
+
+        for block in blocks:
+            if not block:
                 continue
+            # First line: "<id> <user> <time>" (3+ space-separated tokens)
+            header = block[0]
+            parts = header.split(None, 2)
+            op_id = parts[0] if len(parts) >= 1 else ""
+            user = parts[1] if len(parts) >= 2 else ""
+            time = parts[2] if len(parts) >= 3 else ""
+            # Remaining lines: description, then optionally "args: ..."
+            desc_lines: list[str] = []
+            tags = ""
+            for line in block[1:]:
+                if line.startswith("args: "):
+                    tags = line[6:]  # store the args in tags for reference
+                else:
+                    desc_lines.append(line)
+            description = "\n".join(desc_lines)
 
-            for key in ("id", "description", "time", "user", "tags"):
-                if line.strip().lower().startswith(key):
-                    _, _, value = line.partition(":")
-                    current[key] = value.strip()
-                    break
-
-        if current:
             operations.append(Operation(
-                id=current.get("id", ""),
-                description=current.get("description", ""),
-                time=current.get("time", ""),
-                user=current.get("user", ""),
-                tags=current.get("tags", ""),
+                id=op_id,
+                description=description,
+                time=time,
+                user=user,
+                tags=tags,
             ))
 
         return operations
