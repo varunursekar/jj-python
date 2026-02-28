@@ -94,7 +94,11 @@ class DiffSummary:
                 rest = rest.strip("{}")
                 from_path, _, to_path = rest.partition(" => ")
                 entries.append(
-                    DiffEntry(status=status, path=to_path.strip(), from_path=from_path.strip())
+                    DiffEntry(
+                        status=status,
+                        path=to_path.strip(),
+                        from_path=from_path.strip(),
+                    )
                 )
             else:
                 entries.append(DiffEntry(status=status, path=rest))

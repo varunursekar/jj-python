@@ -1,11 +1,12 @@
 """Tests for DockerExecutor."""
 
-import subprocess
 from unittest.mock import AsyncMock, patch
 
 import pytest
 
 from jj._docker import DockerExecutor
+
+_PATCH_TARGET = "jj._docker.asyncio.create_subprocess_exec"
 
 
 class TestDockerExecute:
@@ -16,7 +17,7 @@ class TestDockerExecute:
         mock_proc.communicate.return_value = (b"output", b"")
         mock_proc.returncode = 0
 
-        with patch("jj._docker.asyncio.create_subprocess_exec", return_value=mock_proc) as mock_exec:
+        with patch(_PATCH_TARGET, return_value=mock_proc) as mock_exec:
             result = await executor.execute(["jj", "log"])
 
         # Should wrap in docker exec
@@ -39,11 +40,10 @@ class TestDockerExecute:
         mock_proc.communicate.return_value = (b"", b"")
         mock_proc.returncode = 0
 
-        with patch("jj._docker.asyncio.create_subprocess_exec", return_value=mock_proc) as mock_exec:
+        with patch(_PATCH_TARGET, return_value=mock_proc) as mock_exec:
             await executor.execute(["jj", "status"])
 
         call_args = mock_exec.call_args[0]
-        # Should include -w /repo
         assert "-w" in call_args
         idx = call_args.index("-w")
         assert call_args[idx + 1] == "/repo"
@@ -55,7 +55,7 @@ class TestDockerExecute:
         mock_proc.communicate.return_value = (b"", b"")
         mock_proc.returncode = 0
 
-        with patch("jj._docker.asyncio.create_subprocess_exec", return_value=mock_proc) as mock_exec:
+        with patch(_PATCH_TARGET, return_value=mock_proc) as mock_exec:
             await executor.execute(["jj", "log"])
 
         call_args = mock_exec.call_args[0]
@@ -70,7 +70,7 @@ class TestDockerExecute:
         mock_proc.communicate.return_value = (b"", b"")
         mock_proc.returncode = 0
 
-        with patch("jj._docker.asyncio.create_subprocess_exec", return_value=mock_proc) as mock_exec:
+        with patch(_PATCH_TARGET, return_value=mock_proc) as mock_exec:
             await executor.execute(["jj", "log"])
 
         call_args = mock_exec.call_args[0]
@@ -86,7 +86,7 @@ class TestDockerStart:
         mock_proc.communicate.return_value = (b"container123\n", b"")
         mock_proc.returncode = 0
 
-        with patch("jj._docker.asyncio.create_subprocess_exec", return_value=mock_proc) as mock_exec:
+        with patch(_PATCH_TARGET, return_value=mock_proc) as mock_exec:
             executor = await DockerExecutor.start(
                 image="my-image",
                 workdir="/repo",
@@ -116,9 +116,11 @@ class TestDockerStart:
         mock_proc.communicate.return_value = (b"", b"error starting")
         mock_proc.returncode = 1
 
-        with patch("jj._docker.asyncio.create_subprocess_exec", return_value=mock_proc):
-            with pytest.raises(RuntimeError, match="Failed to start container"):
-                await DockerExecutor.start(image="bad-image")
+        with (
+            patch(_PATCH_TARGET, return_value=mock_proc),
+            pytest.raises(RuntimeError, match="Failed to start container"),
+        ):
+            await DockerExecutor.start(image="bad-image")
 
 
 class TestDockerStop:
@@ -129,7 +131,7 @@ class TestDockerStop:
         mock_proc.communicate.return_value = (b"", b"")
         mock_proc.returncode = 0
 
-        with patch("jj._docker.asyncio.create_subprocess_exec", return_value=mock_proc) as mock_exec:
+        with patch(_PATCH_TARGET, return_value=mock_proc) as mock_exec:
             await executor.stop()
 
         call_args = mock_exec.call_args[0]
@@ -141,7 +143,7 @@ class TestDockerStop:
     @pytest.mark.asyncio
     async def test_stop_noop_when_not_owned(self):
         executor = DockerExecutor(container="c1", _owns_container=False)
-        with patch("jj._docker.asyncio.create_subprocess_exec") as mock_exec:
+        with patch(_PATCH_TARGET) as mock_exec:
             await executor.stop()
         mock_exec.assert_not_called()
 
@@ -160,7 +162,7 @@ class TestDockerContextManager:
         mock_proc.communicate.return_value = (b"", b"")
         mock_proc.returncode = 0
 
-        with patch("jj._docker.asyncio.create_subprocess_exec", return_value=mock_proc):
+        with patch(_PATCH_TARGET, return_value=mock_proc):
             async with executor:
                 pass
         # After exiting, should have been stopped

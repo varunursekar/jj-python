@@ -73,12 +73,14 @@ class OperationManager:
                     desc_lines.append(line)
             description = "\n".join(desc_lines)
 
-            operations.append(Operation(
-                id=op_id,
-                description=description,
-                time=time,
-                user=user,
-                tags=tags,
-            ))
+            operations.append(
+                Operation(
+                    id=op_id,
+                    description=description,
+                    time=time,
+                    user=user,
+                    tags=tags,
+                )
+            )
 
         return operations

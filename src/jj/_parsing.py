@@ -10,13 +10,13 @@ from .models import Change
 # and appending extra fields not included in json(self).
 CHANGE_TEMPLATE = (
     'surround("{", "}", '
-    '"\\\"base\\\":" ++ json(self)'
-    ' ++ ",\\\"bookmarks\\\":" ++ json(bookmarks)'
-    ' ++ ",\\\"local_bookmarks\\\":" ++ json(local_bookmarks)'
-    ' ++ ",\\\"tags\\\":" ++ json(tags)'
-    ' ++ ",\\\"empty\\\":" ++ json(empty)'
-    ' ++ ",\\\"conflict\\\":" ++ json(conflict)'
-    ' ++ ",\\\"hidden\\\":" ++ json(hidden)'
+    '"\\"base\\":" ++ json(self)'
+    ' ++ ",\\"bookmarks\\":" ++ json(bookmarks)'
+    ' ++ ",\\"local_bookmarks\\":" ++ json(local_bookmarks)'
+    ' ++ ",\\"tags\\":" ++ json(tags)'
+    ' ++ ",\\"empty\\":" ++ json(empty)'
+    ' ++ ",\\"conflict\\":" ++ json(conflict)'
+    ' ++ ",\\"hidden\\":" ++ json(hidden)'
     ")"
 )
 

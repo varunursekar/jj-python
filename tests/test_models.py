@@ -1,8 +1,16 @@
 """Tests for model classes — pure data parsing, no async."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from jj.models import Bookmark, Change, DiffEntry, DiffSummary, Operation, Signature, _extract_names
+from jj.models import (
+    Bookmark,
+    Change,
+    DiffEntry,
+    DiffSummary,
+    Operation,
+    Signature,
+    _extract_names,
+)
 
 from .conftest import make_change_json, make_signature_json
 
@@ -17,7 +25,7 @@ class TestSignature:
         sig = Signature.from_json(data)
         assert sig.name == "Alice"
         assert sig.email == "alice@example.com"
-        assert sig.timestamp == datetime(2025, 1, 15, 10, 30, tzinfo=timezone.utc)
+        assert sig.timestamp == datetime(2025, 1, 15, 10, 30, tzinfo=UTC)
 
     def test_from_json_naive_timestamp(self):
         data = make_signature_json(timestamp="2025-06-01T12:00:00")
@@ -28,7 +36,10 @@ class TestSignature:
 
 class TestExtractNames:
     def test_object_format(self):
-        items = [{"name": "main", "target": ["abc"]}, {"name": "dev", "target": ["def"]}]
+        items = [
+            {"name": "main", "target": ["abc"]},
+            {"name": "dev", "target": ["def"]},
+        ]
         assert _extract_names(items) == ["main", "dev"]
 
     def test_string_format(self):

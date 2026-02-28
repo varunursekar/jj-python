@@ -25,7 +25,7 @@ class TestGitPush:
     async def test_push_basic(self, gm):
         mgr, mx = gm
         mx.queue(stdout="ok", stderr="")
-        result = await mgr.push()
+        await mgr.push()
         cmd = mx.calls[0]
         assert "git" in cmd
         assert "push" in cmd
@@ -97,7 +97,8 @@ class TestGitClone:
         mx.queue(stdout="")  # clone command
         with patch("jj._runner.shutil.which", return_value="/usr/bin/jj"):
             from jj._git import GitManager
-            repo = await GitManager.clone(
+
+            await GitManager.clone(
                 "https://github.com/user/repo.git",
                 "/tmp/test-clone",
                 executor=mx,
@@ -114,6 +115,7 @@ class TestGitClone:
         mx.queue(stdout="")
         with patch("jj._runner.shutil.which", return_value="/usr/bin/jj"):
             from jj._git import GitManager
+
             repo = await GitManager.clone(
                 "https://github.com/user/myrepo.git",
                 executor=mx,
@@ -128,6 +130,7 @@ class TestGitClone:
         mx.queue(stdout="")
         with patch("jj._runner.shutil.which", return_value="/usr/bin/jj"):
             from jj._git import GitManager
+
             repo = await GitManager.clone(
                 "https://github.com/user/myrepo",
                 executor=mx,
@@ -170,7 +173,9 @@ class TestGitRemote:
     @pytest.mark.asyncio
     async def test_remote_list_parses_output(self, gm):
         mgr, mx = gm
-        mx.queue(stdout="origin https://github.com/user/repo.git\nupstream https://other.com/repo\n")
+        mx.queue(
+            stdout="origin https://github.com/user/repo.git\nupstream https://other.com/repo\n"
+        )
         result = await mgr.remote_list()
         assert result == {
             "origin": "https://github.com/user/repo.git",

@@ -63,7 +63,9 @@ class TestWorkspaceList:
     @pytest.mark.asyncio
     async def test_list_parses_names(self, wm):
         mgr, mx = wm
-        mx.queue(stdout="default: abc123 (no description)\nsecond: def456 (my workspace)\n")
+        mx.queue(
+            stdout="default: abc123 (no description)\nsecond: def456 (my workspace)\n"
+        )
         result = await mgr.list()
         assert result == ["default", "second"]
 

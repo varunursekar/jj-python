@@ -5,13 +5,9 @@ from __future__ import annotations
 import json
 import subprocess
 from collections import deque
-from datetime import datetime, timezone
 from unittest.mock import patch
 
 import pytest
-
-from jj._executor import Executor
-
 
 # ---------------------------------------------------------------------------
 # MockExecutor

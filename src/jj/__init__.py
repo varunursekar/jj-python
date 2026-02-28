@@ -7,19 +7,19 @@ from .models import Bookmark, Change, DiffEntry, DiffSummary, Operation, Signatu
 from .repo import Repo, Status
 
 __all__ = [
-    "Repo",
-    "Status",
-    "Change",
-    "Signature",
     "Bookmark",
+    "Change",
     "DiffEntry",
     "DiffSummary",
-    "Operation",
-    "Executor",
-    "LocalExecutor",
     "DockerExecutor",
-    "JJError",
+    "Executor",
     "JJCommandError",
+    "JJError",
     "JJNotFoundError",
     "JJRepoNotFoundError",
+    "LocalExecutor",
+    "Operation",
+    "Repo",
+    "Signature",
+    "Status",
 ]

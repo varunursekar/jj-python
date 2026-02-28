@@ -60,7 +60,7 @@ class GitManager:
         *,
         jj_path: str = "jj",
         executor: Executor | None = None,
-    ) -> "Repo":
+    ) -> Repo:
         """Clone a git repository. Returns a new Repo pointed at the clone."""
         from .repo import Repo
 
@@ -127,7 +127,7 @@ class GitManager:
     async def _git_cmd(self, args: list[str]) -> subprocess.CompletedProcess[str]:
         """Run a raw git command against the underlying git repo."""
         root = await self._workspace_root()
-        return await self._runner.executor.execute(["git", "-C", root] + args)
+        return await self._runner.executor.execute(["git", "-C", root, *args])
 
     async def bundle_create(
         self,
@@ -151,12 +151,15 @@ class GitManager:
         result = await self._git_cmd(args)
         if result.returncode != 0:
             from .errors import JJCommandError
+
             raise JJCommandError(
-                ["git"] + args, result.returncode, result.stderr.strip()
+                ["git", *args], result.returncode, result.stderr.strip()
             )
         return path
 
-    async def bundle_unbundle(self, path: str, *, refspec: str = "+refs/*:refs/*") -> None:
+    async def bundle_unbundle(
+        self, path: str, *, refspec: str = "+refs/*:refs/*"
+    ) -> None:
         """Fetch from a git bundle into the underlying repo, then import into jj.
 
         Uses ``git fetch <bundle> <refspec>`` to unpack objects *and* create refs.
@@ -165,6 +168,7 @@ class GitManager:
         result = await self._git_cmd(["fetch", path, refspec])
         if result.returncode != 0:
             from .errors import JJCommandError
+
             raise JJCommandError(
                 ["git", "fetch", path, refspec],
                 result.returncode,
@@ -177,6 +181,7 @@ class GitManager:
         result = await self._git_cmd(["bundle", "verify", path])
         if result.returncode != 0:
             from .errors import JJCommandError
+
             raise JJCommandError(
                 ["git", "bundle", "verify", path],
                 result.returncode,

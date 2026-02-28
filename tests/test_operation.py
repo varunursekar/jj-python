@@ -63,11 +63,7 @@ class TestOperationLog:
 
 class TestParseOpLog:
     def test_parse_single_op(self):
-        text = (
-            "abc123 admin@host now, lasted 5ms\n"
-            "init repo\n"
-            "args: jj git init\n"
-        )
+        text = "abc123 admin@host now, lasted 5ms\ninit repo\nargs: jj git init\n"
         ops = OperationManager._parse_op_log(text)
         assert len(ops) == 1
         assert ops[0].id == "abc123"
@@ -100,10 +96,7 @@ class TestParseOpLog:
         assert ops[0].user == "root()"
 
     def test_parse_entry_without_args_line(self):
-        text = (
-            "abc123 user@host now, lasted 5ms\n"
-            "add workspace 'default'\n"
-        )
+        text = "abc123 user@host now, lasted 5ms\nadd workspace 'default'\n"
         ops = OperationManager._parse_op_log(text)
         assert len(ops) == 1
         assert ops[0].id == "abc123"

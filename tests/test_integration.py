@@ -13,7 +13,7 @@ import pytest
 
 from jj._executor import LocalExecutor
 from jj.errors import JJCommandError, JJRepoNotFoundError
-from jj.models import Bookmark, Change, DiffSummary
+from jj.models import Change, DiffSummary
 from jj.repo import Repo, Status
 
 pytestmark = pytest.mark.skipif(

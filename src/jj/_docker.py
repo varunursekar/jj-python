@@ -100,7 +100,9 @@ class DockerExecutor:
         if not self._owns_container:
             return
         proc = await asyncio.create_subprocess_exec(
-            self.docker_path, "stop", self.container,
+            self.docker_path,
+            "stop",
+            self.container,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )

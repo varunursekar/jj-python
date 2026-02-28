@@ -1,13 +1,16 @@
 """Tests for Repo core methods — verifies args passed to executor and parsed returns."""
 
-import json
-
 import pytest
 
-from jj.models import DiffSummary
 from jj.repo import Status
 
-from .conftest import MockExecutor, change_stdout, changes_stdout, make_change_json, make_repo
+from .conftest import (
+    MockExecutor,
+    change_stdout,
+    changes_stdout,
+    make_change_json,
+    make_repo,
+)
 
 
 @pytest.fixture
@@ -25,7 +28,7 @@ class TestLog:
     async def test_log_default_revset(self, mx, rp):
         c = make_change_json(change_id="log1")
         mx.queue(stdout=changes_stdout(c))
-        result = await rp.log()
+        await rp.log()
         cmd = mx.calls[0]
         assert "log" in cmd
         assert "-r" in cmd
@@ -36,7 +39,7 @@ class TestLog:
     async def test_log_custom_revset(self, mx, rp):
         c = make_change_json(change_id="log2")
         mx.queue(stdout=changes_stdout(c))
-        result = await rp.log(revset="main..@")
+        await rp.log(revset="main..@")
         cmd = mx.calls[0]
         idx = cmd.index("-r")
         assert cmd[idx + 1] == "main..@"
@@ -85,7 +88,7 @@ class TestShow:
     async def test_show_custom_rev(self, mx, rp):
         c = make_change_json(change_id="show2")
         mx.queue(stdout=change_stdout(c))
-        result = await rp.show("abc")
+        await rp.show("abc")
         cmd = mx.calls[0]
         idx = cmd.index("-r")
         assert cmd[idx + 1] == "abc"
@@ -404,7 +407,7 @@ class TestDuplicate:
         c2 = make_change_json(change_id="d2")
         mx.queue(stdout="")
         mx.queue(stdout=changes_stdout(c1, c2))
-        result = await rp.duplicate("abc", "def")
+        await rp.duplicate("abc", "def")
         cmd = mx.calls[0]
         assert "abc" in cmd
         assert "def" in cmd

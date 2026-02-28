@@ -2,7 +2,13 @@
 
 import json
 
-from jj._parsing import CHANGE_LIST_TEMPLATE, CHANGE_TEMPLATE, SEPARATOR, parse_change, parse_changes
+from jj._parsing import (
+    CHANGE_LIST_TEMPLATE,
+    CHANGE_TEMPLATE,
+    SEPARATOR,
+    parse_change,
+    parse_changes,
+)
 
 from .conftest import change_stdout, changes_stdout, make_change_json
 
